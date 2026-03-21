@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>For You 💌</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose: #e8596a;
+      --blush: #f7cdd3;
+      --cream: #fff8f2;
+      --deep: #2b1a1e;
+      --gold: #d4a853;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--cream);
+      font-family: 'Quicksand', sans-serif;
+      color: var(--deep);
+      overflow-x: hidden;
+    }
+
+    /* ── Floating petals ── */
+    .petals { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .petal {
+      position: absolute;
+      top: -40px;
+      font-size: 1.4rem;
+      opacity: 0;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      0%   { opacity: 0; transform: translateY(0) rotate(0deg); }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(105vh) rotate(360deg); }
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .envelope-wrap {
+      animation: floatUp 1.2s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes floatUp {
+      from { opacity: 0; transform: translateY(60px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .envelope {
+      width: 140px;
+      height: 100px;
+      background: linear-gradient(135deg, #fff0f3, #fde0e5);
+      border-radius: 8px;
+      margin: 0 auto 2rem;
+      position: relative;
+      box-shadow: 0 8px 40px rgba(232,89,106,.2);
+      cursor: pointer;
+      transition: transform .3s ease;
+    }
+    .envelope:hover { transform: scale(1.05) rotate(-2deg); }
+    .envelope::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 50%, #f9b8c0 50%);
+      border-radius: 8px;
+      opacity: .4;
+    }
+    .envelope::after {
+      content: '💌';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.4rem;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.6rem, 8vw, 5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--deep);
+      animation: fadeSlide .9s .3s both;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--rose);
+    }
+
+    .hero-sub {
+      margin-top: .8rem;
+      font-size: clamp(.9rem, 2.5vw, 1.1rem);
+      font-weight: 300;
+      color: #9b6e74;
+      letter-spacing: .08em;
+      animation: fadeSlide .9s .5s both;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .scroll-hint {
+      margin-top: 3rem;
+      font-size: .8rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: #c8909a;
+      animation: bounce 2s 1.5s infinite, fadeSlide .9s .9s both;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(6px); }
+    }
+
+    /* ── Reasons section ── */
+    .reasons {
+      position: relative;
+      z-index: 1;
+      padding: 4rem 1.5rem 6rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 300;
+      text-align: center;
+      margin-bottom: 3rem;
+      color: var(--deep);
+    }
+    .section-label span {
+      display: block;
+      font-size: .75rem;
+      font-family: 'Quicksand', sans-serif;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: .4rem;
+    }
+
+    .reason-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 20px rgba(232,89,106,.07);
+      border-left: 3px solid var(--blush);
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity .6s ease, transform .6s ease, box-shadow .3s;
+    }
+    .reason-card:hover {
+      box-shadow: 0 6px 30px rgba(232,89,106,.15);
+      transform: translateX(4px) !important;
+    }
+    .reason-card.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reason-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--blush);
+      line-height: 1;
+      min-width: 2rem;
+    }
+    .reason-text {
+      font-size: .97rem;
+      line-height: 1.7;
+      color: #5a3a3f;
+    }
+
+    /* ── Love meter ── */
+    .meter-section {
+      z-index: 1;
+      position: relative;
+      background: linear-gradient(160deg, #fce8eb, #fff0f5);
+      padding: 4rem 1.5rem;
+      text-align: center;
+    }
+    .meter-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      color: var(--deep);
+      margin-bottom: .5rem;
+    }
+    .meter-bar-wrap {
+      max-width: 360px;
+      margin: 1.5rem auto;
+      height: 12px;
+      background: var(--blush);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .meter-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--rose), var(--gold));
+      border-radius: 100px;
+      transition: width 2s cubic-bezier(.22,1,.36,1);
+    }
+    .meter-val {
+      font-size: 3.5rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      color: var(--rose);
+      margin-top: .4rem;
+    }
+    .meter-val sub { font-size: 1.2rem; color: #c8909a; }
+
+    /* ── Footer message ── */
+    .footer-msg {
+      z-index: 1;
+      position: relative;
+      padding: 5rem 1.5rem 6rem;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .footer-msg blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--deep);
+      border: none;
+    }
+    .footer-msg .sig {
+      margin-top: 2rem;
+      font-size: .85rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--rose);
+    }
+
+    /* heart burst on click */
+    .burst {
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+      font-size: 1.5rem;
+      animation: burst .8s ease forwards;
+    }
+    @keyframes burst {
+      0%   { opacity: 1; transform: scale(0) translateY(0); }
+      60%  { opacity: 1; transform: scale(1.4) translateY(-30px); }
+      100% { opacity: 0; transform: scale(1) translateY(-60px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating petals -->
+<div class="petals" id="petals"></div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="envelope-wrap">
+    <div class="envelope" id="env"></div>
+  </div>
+  <h1 class="hero-title">
+    Just so you know,<br><em>I adore you.</em>
+  </h1>
+  <p class="hero-sub">A little page made with a whole lot of love ♡</p>
+  <p class="scroll-hint">↓ keep reading ↓</p>
+</section>
+
+<!-- Reasons -->
+<section class="reasons">
+  <h2 class="section-label">
+    <span>reasons why</span>
+    You make my heart full
+  </h2>
+
+  <div class="reason-card"><span class="reason-num">01</span><p class="reason-text">d7ika dyalk — ila jina n7toha blast chemch l3alam kaml ghaywli ferhan</p></div>
+  <div class="reason-card"><span class="reason-num">02</span><p class="reason-text">lmoments likanwzohom fach kankuno bjuj huma ahsn moments kandwz f simana kamla</p></div>
+  <div class="reason-card"><span class="reason-num">03</span><p class="reason-text">d7ka dyalk lmax fach katbday drbi katkhlini n7s brassi as3ad insan mea lbnt likanbghi w katkhlini nkun satisfied</p></div>
+  <div class="reason-card"><span class="reason-num">04</span><p class="reason-text">nti hya chakhs likanbghi ngulih kulchi f qlbi bach kan7s chnu zwin chnu lkhayb chnu kan3ich kanbghi npartage meak kulchi</p></div>
+  <div class="reason-card"><span class="reason-num">05</span><p class="reason-text">fach kankun meak i feel like home</p></div>
+  <div class="reason-card"><span class="reason-num">06</span><p class="reason-text">aktr bnt mrebya w mtkhlqa w dreyfa w qlbha byd erft f hyati</p></div>
+  <div class="reason-card"><span class="reason-num">07</span><p class="reason-text">hta fach katkun dnya k7la f eyni gher kantfkrk ola nchuf pics w vids dyalk kaybanliya nur qdam eyni</p></div>
+</section>
+
+<!-- Love meter -->
+<section class="meter-section">
+  <p class="meter-label">How much I love you</p>
+  <div class="meter-bar-wrap">
+    <div class="meter-bar" id="meterBar"></div>
+  </div>
+  <p class="meter-val" id="meterVal">0 <sub>%</sub></p>
+  <p style="font-size:.8rem;color:#c8909a;margin-top:.3rem;">(spoiler: it overflows)</p>
+</section>
+
+<!-- Footer -->
+<section class="footer-msg">
+  <blockquote>
+    "You are my today<br>and all of my tomorrows."
+  </blockquote>
+  <p class="sig">— always yours ♡</p>
+</section>
+
+<script>
+  /* ── Petals ── */
+  const emojis = ['🌸','🌺','💮','🌷','🩷','💗','🌹'];
+  const petalsEl = document.getElementById('petals');
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('span');
+    p.className = 'petal';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (6 + Math.random() * 8) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.fontSize = (.8 + Math.random() * 1.2) + 'rem';
+    petalsEl.appendChild(p);
+  }
+
+  /* ── Scroll reveal ── */
+  const cards = document.querySelectorAll('.reason-card');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.15 });
+  cards.forEach(c => obs.observe(c));
+
+  /* ── Love meter ── */
+  const meterBar = document.getElementById('meterBar');
+  const meterVal = document.getElementById('meterVal');
+  const meterObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      let v = 0;
+      const tick = setInterval(() => {
+        v = Math.min(v + 1.4, 100);
+        meterBar.style.width = v + '%';
+        meterVal.innerHTML = Math.round(v) === 100
+          ? '∞ <sub>%</sub>'
+          : Math.round(v) + ' <sub>%</sub>';
+        if (v >= 100) clearInterval(tick);
+      }, 18);
+      meterObs.disconnect();
+    }
+  }, { threshold: .5 });
+  meterObs.observe(document.querySelector('.meter-section'));
+
+  /* ── Heart burst on click ── */
+  document.addEventListener('click', e => {
+    const h = document.createElement('span');
+    h.className = 'burst';
+    h.textContent = ['💗','💕','💖','🩷','💓'][Math.floor(Math.random()*5)];
+    h.style.left = (e.clientX - 12) + 'px';
+    h.style.top  = (e.clientY - 12) + 'px';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 900);
+  });
+
+  /* ── Envelope wiggle ── */
+  document.getElementById('env').addEventListener('click', () => {
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const h = document.createElement('span');
+        h.className = 'burst';
+        h.textContent = '💌';
+        h.style.left = (window.innerWidth/2 + (Math.random()-0.5)*120 - 12) + 'px';
+        h.style.top  = (window.innerHeight/2 + (Math.random()-0.5)*80 - 12) + 'px';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 900);
+      }, i * 80);
+    }
+  });
+</script>
+</body>
+</html>
