@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Time Together</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffecd2 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.3);
+            animation: float 15s infinite linear;
+            bottom: -100px;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(-10vh) rotate(45deg) scale(1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120vh) rotate(720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 3rem;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 10s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-display {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            margin: 2rem 0;
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .date-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .date-value {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .time-unit {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 1.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .time-unit::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .time-unit:hover::after {
+            left: 100%;
+        }
+
+        .time-unit:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .time-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            display: block;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            font-family: 'Playfair Display', serif;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        .quote-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: white;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .milestone-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .milestone-title {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .next-milestone {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .milestone-name {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .milestone-countdown {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .time-value { font-size: 2rem; }
+            .glass-card { padding: 2rem 1.5rem; }
+            .counter-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .emoji-float {
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <div class="main-container">
+        <div class="glass-card">
+            <h1 id="coupleNames">You & Her 💕</h1>
+            <p class="subtitle">Counting Every Moment Together</p>
+
+            <div class="date-display">
+                <div class="date-label">Together Since</div>
+                <div class="date-value" id="startDateDisplay">Loading...</div>
+            </div>
+
+            <div class="counter-grid">
+                <div class="time-unit">
+                    <span class="time-value" id="years">0</span>
+                    <span class="time-label">Years</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-value" id="months">0</span>
+                    <span class="time-label">Months</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-value" id="days">0</span>
+                    <span class="time-label">Days</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-value" id="hours">0</span>
+                    <span class="time-label">Hours</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-value" id="minutes">0</span>
+                    <span class="time-label">Minutes</span>
+                </div>
+                <div class="time-unit pulse">
+                    <span class="time-value" id="seconds">0</span>
+                    <span class="time-label">Seconds</span>
+                </div>
+            </div>
+
+            <div class="milestone-section">
+                <div class="milestone-title">Next Milestone</div>
+                <div class="next-milestone">
+                    <div class="milestone-name" id="milestoneName">--</div>
+                    <div class="milestone-countdown" id="milestoneCountdown">--</div>
+                </div>
+            </div>
+
+            <div class="quote-section">
+                <p class="quote">"Every moment with you is a treasure I keep in my heart forever."</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // EDIT THESE VALUES TO CUSTOMIZE FOR YOU
+        // ==========================================
+        
+        // Your names (keep the quotes)
+        const YOUR_NAMES = "Ossy & Maneel";
+        
+        // Your start date: YEAR, MONTH (0-11), DAY, HOUR, MINUTE
+        // Month is 0-indexed: 0 = January, 11 = December
+        // Example: March 15, 2023 at 8:30 PM = new Date(2023, 2, 15, 20, 30)
+        const START_DATE = new Date(2025, 09, 26, 17, 30);
+        
+        // Optional: Custom quote (or leave as is)
+        const CUSTOM_QUOTE = "Every moment with you is a treasure I keep in my heart forever.";
+        
+        // ==========================================
+        // STOP EDITING - CODE BELOW
+        // ==========================================
+
+        function createHearts() {
+            const container = document.getElementById('heartsContainer');
+            const hearts = ['💕', '💖', '💗', '💓', '💝', '❤️', '💘', '💞'];
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                container.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 20000);
+            }, 800);
+        }
+
+        function updateCounter() {
+            const now = new Date();
+            const diff = now - START_DATE;
+
+            if (diff < 0) {
+                document.getElementById('startDateDisplay').textContent = "Our future begins soon...";
+                return;
+            }
+
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+            const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('years').textContent = years;
+            document.getElementById('months').textContent = months;
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+
+            updateMilestone(diff);
+        }
+
+        function updateMilestone(diff) {
+            const daysTogether = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            const milestones = [
+                { days: 100, name: "100 Days Together" },
+                { days: 200, name: "200 Days Together" },
+                { days: 365, name: "1 Year Anniversary" },
+                { days: 730, name: "2 Year Anniversary" },
+                { days: 1095, name: "3 Year Anniversary" },
+                { days: 1460, name: "4 Year Anniversary" },
+                { days: 1825, name: "5 Year Anniversary" },
+                { days: 3650, name: "10 Year Anniversary" }
+            ];
+
+            let nextMilestone = milestones.find(m => m.days > daysTogether);
+            
+            if (!nextMilestone) {
+                const years = Math.floor(daysTogether / 365) + 1;
+                nextMilestone = { days: years * 365, name: `${years} Year Anniversary` };
+            }
+
+            const daysUntil = nextMilestone.days - daysTogether;
+            document.getElementById('milestoneName').textContent = nextMilestone.name;
+            document.getElementById('milestoneCountdown').textContent = `${daysUntil} days to go! 🎉`;
+        }
+
+        // Initialize
+        window.onload = function() {
+            createHearts();
+            
+            // Set names
+            document.getElementById('coupleNames').innerHTML = `${YOUR_NAMES} <span class="emoji-float">💕</span>`;
+            
+            // Set date display
+            const displayDate = START_DATE.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('startDateDisplay').textContent = displayDate;
+            
+            // Set custom quote if provided
+            if (CUSTOM_QUOTE) {
+                document.querySelector('.quote').textContent = `"${CUSTOM_QUOTE}"`;
+            }
+            
+            // Start counter
+            updateCounter();
+            setInterval(updateCounter, 1000);
+        };
+    </script>
+</body>
+</html>
