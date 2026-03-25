@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Universe — Oussama & Maneel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --void-black: #05050a;
+      --nebula-deep: #0a0814;
+      --nebula-purple: #1a0a2e;
+      --nebula-rose: #2d1a3a;
+      --star-white: #f0e6ff;
+      --star-blue: #7ec8e3;
+      --star-warm: #f4a261;
+      --star-rose: #e8a0bf;
+      --star-mint: #7ec8a3;
+      --core-gold: #d4a574;
+      --text-soft: rgba(240, 230, 255, 0.9);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      background: var(--void-black);
+      color: var(--text-soft);
+    }
+
+    .cosmos {
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 30% 20%, rgba(45, 26, 58, 0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(26, 10, 46, 0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, var(--nebula-deep) 0%, var(--void-black) 100%);
+    }
+
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .universe {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .orbital-system {
+      position: relative;
+      width: 100vmin;
+      height: 100vmin;
+      max-width: 800px;
+      max-height: 800px;
+    }
+
+    .core {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, 
+        #fff8e7 0%, 
+        var(--core-gold) 30%, 
+        #8b6914 70%,
+        #3d2e0a 100%);
+      box-shadow: 
+        0 0 60px rgba(212, 165, 116, 0.6),
+        0 0 120px rgba(212, 165, 116, 0.4),
+        0 0 200px rgba(212, 165, 116, 0.2),
+        inset 0 0 30px rgba(255, 255, 255, 0.3);
+      animation: corePulse 4s ease-in-out infinite;
+      z-index: 100;
+      cursor: pointer;
+      transition: transform 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .core:hover {
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    .core::after {
+      content: '';
+      position: absolute;
+      inset: -30px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+      animation: coreGlow 3s ease-in-out infinite alternate;
+    }
+
+    .core-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #1a0a00;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+    }
+
+    .core-names {
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: #2a1a00;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+      margin-top: 2px;
+    }
+
+    @keyframes corePulse {
+      0%, 100% { box-shadow: 
+        0 0 60px rgba(212, 165, 116, 0.6),
+        0 0 120px rgba(212, 165, 116, 0.4),
+        0 0 200px rgba(212, 165, 116, 0.2),
+        inset 0 0 30px rgba(255, 255, 255, 0.3);
+      }
+      50% { box-shadow: 
+        0 0 80px rgba(212, 165, 116, 0.8),
+        0 0 150px rgba(212, 165, 116, 0.5),
+        0 0 250px rgba(212, 165, 116, 0.3),
+        inset 0 0 40px rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    @keyframes coreGlow {
+      0% { opacity: 0.5; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .orbit {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      border: 1px solid rgba(240, 230, 255, 0.06);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .orbit::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      background: linear-gradient(45deg, transparent 40%, rgba(212, 165, 116, 0.1) 50%, transparent 60%) border-box;
+    }
+
+    .orbit-1 { width: 200px; height: 200px; }
+    .orbit-2 { width: 300px; height: 300px; }
+    .orbit-3 { width: 420px; height: 420px; }
+    .orbit-4 { width: 560px; height: 560px; }
+
+    .planet-container {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0;
+      height: 0;
+      z-index: 50;
+    }
+
+    .planet {
+      position: absolute;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transform-origin: center center;
+    }
+
+    .planet::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      background: inherit;
+      filter: blur(12px);
+      opacity: 0.4;
+      z-index: -1;
+    }
+
+    .planet::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.3) 0%, transparent 50%);
+    }
+
+    .planet-rose {
+      background: radial-gradient(circle at 30% 30%, #ffd1dc, var(--star-rose), #8b4a6b);
+      box-shadow: 0 0 25px rgba(232, 160, 191, 0.5);
+    }
+
+    .planet-blue {
+      background: radial-gradient(circle at 30% 30%, #c8e4f0, var(--star-blue), #3a6a7a);
+      box-shadow: 0 0 25px rgba(126, 200, 227, 0.5);
+    }
+
+    .planet-warm {
+      background: radial-gradient(circle at 30% 30%, #ffd9a0, var(--star-warm), #8b5a2b);
+      box-shadow: 0 0 25px rgba(244, 162, 97, 0.5);
+    }
+
+    .planet-mint {
+      background: radial-gradient(circle at 30% 30%, #b8f0d8, var(--star-mint), #3a6a5a);
+      box-shadow: 0 0 25px rgba(126, 200, 163, 0.5);
+    }
+
+    .planet-purple {
+      background: radial-gradient(circle at 30% 30%, #d4c8e8, #9b7eb8, #4a3a5a);
+      box-shadow: 0 0 25px rgba(155, 126, 184, 0.5);
+    }
+
+    .planet-gold {
+      background: radial-gradient(circle at 30% 30%, #f5e6c8, #c9a857, #5a4a2a);
+      box-shadow: 0 0 25px rgba(201, 168, 87, 0.5);
+    }
+
+    .planet:hover {
+      transform: scale(1.4);
+      z-index: 200;
+    }
+
+    .planet:hover::before {
+      opacity: 0.7;
+      filter: blur(15px);
+    }
+
+    .orbit-path-1 { animation: orbit 25s linear infinite; }
+    .orbit-path-2 { animation: orbit 35s linear infinite reverse; }
+    .orbit-path-3 { animation: orbit 50s linear infinite; }
+    .orbit-path-4 { animation: orbit 70s linear infinite reverse; }
+
+    @keyframes orbit {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .memory-popup {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(10, 8, 20, 0.97);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(240, 230, 255, 0.1);
+      border-radius: 24px;
+      padding: 2.5rem;
+      max-width: 420px;
+      width: 90%;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      text-align: center;
+    }
+
+    .memory-popup.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .memory-popup .memory-planet {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+    }
+
+    .memory-popup .memory-date {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--star-blue);
+      margin-bottom: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .memory-popup .memory-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      font-style: italic;
+      margin-bottom: 1.2rem;
+      line-height: 1.3;
+      color: var(--star-white);
+    }
+
+    .memory-popup .memory-description {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      line-height: 1.9;
+      opacity: 0.8;
+    }
+
+    .memory-popup .close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(240, 230, 255, 0.1);
+      background: rgba(240, 230, 255, 0.03);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .memory-popup .close-btn:hover {
+      background: rgba(240, 230, 255, 0.1);
+      border-color: rgba(240, 230, 255, 0.2);
+    }
+
+    .memory-popup .close-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-soft);
+      opacity: 0.6;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 10, 0.85);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 500;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .intro {
+      position: fixed;
+      top: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 100;
+      opacity: 0;
+      animation: fadeInDown 1.5s ease-out 0.5s forwards;
+    }
+
+    .intro h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(135deg, #fff8e7 0%, var(--core-gold) 50%, var(--star-rose) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .intro p {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    .core-message {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(10, 8, 20, 0.98);
+      backdrop-filter: blur(40px);
+      border: 1px solid rgba(212, 165, 116, 0.2);
+      border-radius: 28px;
+      padding: 3.5rem 3rem;
+      max-width: 480px;
+      width: 90%;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      text-align: center;
+    }
+
+    .core-message.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .core-message .heart-icon {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 1.5rem;
+      opacity: 0.9;
+    }
+
+    .core-message h2 {
+      font-size: 2.2rem;
+      font-weight: 300;
+      margin-bottom: 1.8rem;
+      background: linear-gradient(135deg, #fff8e7, var(--core-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .core-message p {
+      font-style: italic;
+      font-size: 1.15rem;
+      line-height: 2;
+      opacity: 0.85;
+    }
+
+    .core-message .signature {
+      margin-top: 2rem;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 2s forwards, pulse 3s ease-in-out infinite 3s;
+      z-index: 100;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 10px);
+      }
+      to {
+        opacity: 0.4;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.6; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .planet-container,
+      .core,
+      .orbit,
+      .hint,
+      .intro {
+        animation: none !important;
+      }
+      .intro {
+        opacity: 1;
+        transform: translateX(-50%);
+      }
+      .hint {
+        opacity: 0.4;
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .core {
+        width: 80px;
+        height: 80px;
+      }
+
+      .core-label {
+        font-size: 0.55rem;
+      }
+
+      .core-names {
+        font-size: 0.75rem;
+      }
+
+      .orbit-1 { width: 150px; height: 150px; }
+      .orbit-2 { width: 220px; height: 220px; }
+      .orbit-3 { width: 300px; height: 300px; }
+      .orbit-4 { width: 380px; height: 380px; }
+
+      .memory-popup {
+        padding: 2rem 1.5rem;
+      }
+
+      .memory-popup .memory-title {
+        font-size: 1.5rem;
+      }
+
+      .core-message {
+        padding: 2.5rem 2rem;
+      }
+
+      .core-message h2 {
+        font-size: 1.6rem;
+      }
+
+      .intro h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cosmos"></div>
+  
+  <canvas id="starfield"></canvas>
+
+  <div class="intro">
+    <h1>Oussama & Maneel</h1>
+    <p>Our little universe of memories</p>
+  </div>
+
+  <div class="universe">
+    <div class="orbital-system">
+      <div class="orbit orbit-1"></div>
+      <div class="orbit orbit-2"></div>
+      <div class="orbit orbit-3"></div>
+      <div class="orbit orbit-4"></div>
+
+      <div class="core" id="core">
+        <span class="core-label">Forever</span>
+        <span class="core-names">O & M</span>
+      </div>
+
+      <!-- Memory Planets -->
+      <div class="planet-container orbit-path-1">
+        <div class="planet planet-rose" style="width: 36px; height: 36px; left: 100px; top: -18px;" data-memory="0"></div>
+      </div>
+
+      <div class="planet-container orbit-path-1" style="animation-delay: -12s;">
+        <div class="planet planet-blue" style="width: 28px; height: 28px; left: -100px; top: -14px;" data-memory="1"></div>
+      </div>
+
+      <div class="planet-container orbit-path-2">
+        <div class="planet planet-warm" style="width: 44px; height: 44px; left: 150px; top: -22px;" data-memory="2"></div>
+      </div>
+
+      <div class="planet-container orbit-path-2" style="animation-delay: -17s;">
+        <div class="planet planet-mint" style="width: 32px; height: 32px; left: -150px; top: -16px;" data-memory="3"></div>
+      </div>
+
+      <div class="planet-container orbit-path-3">
+        <div class="planet planet-purple" style="width: 40px; height: 40px; left: 210px; top: -20px;" data-memory="4"></div>
+      </div>
+
+      <div class="planet-container orbit-path-3" style="animation-delay: -25s;">
+        <div class="planet planet-gold" style="width: 34px; height: 34px; left: -210px; top: -17px;" data-memory="5"></div>
+      </div>
+
+      <div class="planet-container orbit-path-4">
+        <div class="planet planet-rose" style="width: 48px; height: 48px; left: 280px; top: -24px;" data-memory="6"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="hint">Click the planets to explore</p>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="memory-popup" id="memory-popup">
+    <button class="close-btn" id="close-memory">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+    <div class="memory-planet" id="memory-planet"></div>
+    <div class="memory-date" id="memory-date"></div>
+    <h3 class="memory-title" id="memory-title"></h3>
+    <p class="memory-description" id="memory-description"></p>
+  </div>
+
+  <div class="core-message" id="core-message">
+    <button class="close-btn" id="close-core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+    <svg class="heart-icon" viewBox="0 0 24 24" fill="none">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="rgba(232, 160, 191, 0.3)" stroke="rgba(232, 160, 191, 0.6)" stroke-width="1"/>
+    </svg>
+    <h2>مركز كوني</h2>
+<p>في هذا الكون الشاسع من اللحظات التي شاركناها، منال، أنتِ الجاذبية التي تُبقي كل شيء متماسكًا. كل مدار، كل نجم، كل ذكرى تعود إليكِ.</p>
+<p class="signature">إلى الأبد لكِ، أسامة</p>
+  </div>
+
+  <script>
+    // Initialize all variables first
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    
+    let stars = [];
+    let nebulaClouds = [];
+    let animationId = null;
+    
+// Memory data for Oussama & Maneel
+const memories = [
+  {
+    date: "البداية",
+    title: "عندما رأيتك لأول مرة",
+    description: "اصطفّ الكون في اللحظة التي التقت فيها طرقنا. في تلك اللحظة، عرفت أن حياتي لن تكون كما كانت أبداً."
+  },
+  {
+    date: "أول حديث",
+    title: "أصبح صوتك صوتي المفضل",
+    description: "كل كلمة قلتِها كانت كأنني أكتشف كوكبة جديدة. أردت أن أستمع إليك إلى الأبد."
+  },
+  {
+    date: "الوقوع في حبك",
+    title: "اليوم الذي عرفت فيه",
+    description: "لم يكن لحظة واحدة عظيمة — بل كانت ألف لحظة صغيرة. ضحكتك، لطفك، كل ما فيك. حينها عرفت."
+  },
+  {
+    date: "ذكرياتنا",
+    title: "كل لحظة معكِ مغامرة",
+    description: "من لحظاتنا البسيطة إلى أجمل مغامراتنا، كل ثانية معكِ تحمل معنى خاصاً يجعل الحياة أجمل."
+  },
+  {
+    date: "رغم كل شيء",
+    title: "أنتِ ملاذي الآمن",
+    description: "في عالم فوضوي، أنتِ سلامي. وجودك يهدئ كل عاصفة في قلبي."
+  },
+  {
+    date: "ننمو معاً",
+    title: "نبني مستقبلنا",
+    description: "كل حلم أملكه يشملك. نحن نكتب قصة تزداد جمالاً مع كل فصل."
+  },
+  {
+    date: "اليوم ودائماً",
+    title: "وعدي الأبدي",
+    description: "مهما أخذتنا الحياة، سيجد قلبي طريقه إليك دائماً. أنتِ موطني يا منال"
+  }
+];
+
+    // DOM Elements
+    const overlay = document.getElementById('overlay');
+    const memoryPopup = document.getElementById('memory-popup');
+    const coreMessage = document.getElementById('core-message');
+    const closeMemoryBtn = document.getElementById('close-memory');
+    const closeCoreBtn = document.getElementById('close-core');
+    const core = document.getElementById('core');
+    const planets = document.querySelectorAll('.planet');
+
+    // Resize canvas
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.scale(dpr, dpr);
+      initStars();
+      initNebula();
+    }
+
+    // Initialize stars
+    function initStars() {
+      stars = [];
+      const count = Math.floor((window.innerWidth * window.innerHeight) / 2500);
+      
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          radius: Math.max(0.3, Math.random() * 1.5),
+          alpha: Math.random() * 0.7 + 0.2,
+          twinkleSpeed: Math.random() * 0.015 + 0.005,
+          twinkleOffset: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    // Initialize nebula
+    function initNebula() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      nebulaClouds = [
+        { x: w * 0.15, y: h * 0.25, radius: Math.max(150, w * 0.2), color: 'rgba(155, 126, 184, 0.04)' },
+        { x: w * 0.85, y: h * 0.75, radius: Math.max(180, w * 0.22), color: 'rgba(232, 160, 191, 0.03)' },
+        { x: w * 0.5, y: h * 0.5, radius: Math.max(200, w * 0.25), color: 'rgba(126, 200, 227, 0.025)' }
+      ];
+    }
+
+    // Draw frame
+    function draw(timestamp) {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+      // Draw nebula clouds
+      nebulaClouds.forEach(cloud => {
+        const safeRadius = Math.max(1, cloud.radius);
+        const gradient = ctx.createRadialGradient(cloud.x, cloud.y, 0, cloud.x, cloud.y, safeRadius);
+        gradient.addColorStop(0, cloud.color);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.beginPath();
+        ctx.arc(cloud.x, cloud.y, safeRadius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      });
+
+      // Draw stars
+      stars.forEach(star => {
+        const twinkle = Math.sin(timestamp * star.twinkleSpeed + star.twinkleOffset);
+        const alpha = Math.max(0.1, Math.min(1, star.alpha + twinkle * 0.25));
+        
+        const safeRadius = Math.max(0.5, star.radius);
+        const gradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, safeRadius * 2.5);
+        gradient.addColorStop(0, 'rgba(240, 230, 255, ' + alpha + ')');
+        gradient.addColorStop(0.5, 'rgba(240, 230, 255, ' + (alpha * 0.3) + ')');
+        gradient.addColorStop(1, 'rgba(240, 230, 255, 0)');
+        
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, safeRadius * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      });
+
+      animationId = requestAnimationFrame(draw);
+    }
+
+    // Show memory popup
+    function showMemory(index) {
+      const memory = memories[index];
+      document.getElementById('memory-date').textContent = memory.date;
+      document.getElementById('memory-title').textContent = memory.title;
+      document.getElementById('memory-description').textContent = memory.description;
+      
+      const planetEl = document.getElementById('memory-planet');
+      planetEl.className = 'memory-planet ' + memory.planetClass;
+      
+      overlay.classList.add('active');
+      memoryPopup.classList.add('active');
+    }
+
+    // Show core message
+    function showCoreMessage() {
+      overlay.classList.add('active');
+      coreMessage.classList.add('active');
+    }
+
+    // Close all popups
+    function closeAll() {
+      overlay.classList.remove('active');
+      memoryPopup.classList.remove('active');
+      coreMessage.classList.remove('active');
+    }
+
+    // Event listeners
+    planets.forEach(planet => {
+      planet.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.memory);
+        showMemory(index);
+      });
+    });
+
+    core.addEventListener('click', showCoreMessage);
+
+    closeMemoryBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAll();
+    });
+
+    closeCoreBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAll();
+    });
+
+    overlay.addEventListener('click', closeAll);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAll();
+      }
+    });
+
+    // Initialize
+    function init() {
+      resizeCanvas();
+      draw(0);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    init();
+  </script>
+</body>
+</html>
