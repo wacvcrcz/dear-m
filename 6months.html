@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حديقة ذكرياتنا - أسامة ومنال</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #040a08;
+      --bg-forest: #071a12;
+      --glow-teal: #4fd1c5;
+      --glow-rose: #ed64a6;
+      --glow-gold: #f6ad55;
+      --flower-pink: #fbb6ce;
+      --flower-blue: #90cdf4;
+      --text-light: #e6fffa;
+      --text-dim: #a0aec0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background Atmosphere */
+    .garden-bg {
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 50% 100%, rgba(79, 209, 197, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 50%, rgba(237, 100, 150, 0.03) 0%, transparent 40%),
+        linear-gradient(to bottom, var(--bg-deep), var(--bg-forest));
+      z-index: 0;
+    }
+
+    /* Fireflies Canvas */
+    #fireflies {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Header Section */
+    .header {
+      text-align: center;
+      padding: 4rem 2rem 2rem;
+      opacity: 0;
+      animation: fadeIn 1.5s ease-out forwards;
+    }
+
+    .header h1 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: clamp(2rem, 8vw, 4rem);
+      font-weight: 700;
+      color: var(--glow-teal);
+      text-shadow: 0 0 30px rgba(79, 209, 197, 0.3);
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .header .date {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid rgba(79, 209, 197, 0.3);
+      border-radius: 50px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.9rem;
+      color: var(--glow-gold);
+      background: rgba(79, 209, 197, 0.05);
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Garden Grid */
+    .garden {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      padding: 3rem 2rem;
+      max-width: 800px;
+      width: 100%;
+      margin-bottom: 4rem;
+    }
+
+    @media (min-width: 600px) {
+      .garden {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3rem;
+      }
+    }
+
+    /* Flower Pot / Container */
+    .flower-spot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 250px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .stem {
+      width: 2px;
+      height: 0;
+      background: linear-gradient(to top, rgba(79, 209, 197, 0.3), transparent);
+      transition: height 1s ease-out;
+      position: absolute;
+      bottom: 0;
+      z-index: 1;
+    }
+
+    .flower-spot.bloomed .stem {
+      height: 120px;
+    }
+
+    /* The Flower Head */
+    .flower-head {
+      position: absolute;
+      bottom: 100px;
+      width: 80px;
+      height: 80px;
+      transform: scale(0) rotate(-45deg);
+      opacity: 0;
+      transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 2;
+    }
+
+    .flower-spot.bloomed .flower-head {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+
+    /* SVG Flower Styling */
+    .flower-head svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 15px var(--glow-rose));
+    }
+
+    /* Leaves */
+    .leaf {
+      position: absolute;
+      bottom: 30px;
+      width: 20px;
+      height: 10px;
+      background: rgba(79, 209, 197, 0.2);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.5s ease 0.5s;
+    }
+
+    .flower-spot.bloomed .leaf {
+      opacity: 1;
+    }
+
+    .leaf.left {
+      right: 50%;
+      transform: rotate(-30deg) translateX(10px);
+    }
+
+    .leaf.right {
+      left: 50%;
+      transform: rotate(30deg) translateX(-10px);
+    }
+
+    /* Month Label */
+    .month-label {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 1.2rem;
+      color: var(--text-light);
+      margin-top: 1rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s ease;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .flower-spot.bloomed .month-label {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Hover effect */
+    .flower-spot.bloomed:hover .flower-head svg {
+      filter: drop-shadow(0 0 25px var(--glow-gold));
+      transform: scale(1.1);
+      transition: all 0.3s ease;
+    }
+
+    /* Memory Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 10, 8, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .memory-card {
+      background: linear-gradient(145deg, rgba(7, 26, 18, 0.9), rgba(4, 10, 8, 0.95));
+      border: 1px solid rgba(79, 209, 197, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.4s ease;
+      position: relative;
+      box-shadow: 0 0 50px rgba(79, 209, 197, 0.1);
+    }
+
+    .modal-overlay.active .memory-card {
+      transform: scale(1);
+    }
+
+    .memory-card .icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1.5rem;
+      background: rgba(237, 100, 150, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .memory-card h2 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 2rem;
+      color: var(--glow-rose);
+      margin-bottom: 0.5rem;
+    }
+
+    .memory-card .time {
+      font-size: 0.8rem;
+      color: var(--glow-teal);
+      margin-bottom: 1.5rem;
+      display: block;
+      opacity: 0.7;
+    }
+
+    .memory-card p {
+      font-size: 1.1rem;
+      line-height: 2;
+      color: var(--text-light);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      left: 1rem; /* Left for RTL */
+      background: rgba(255,255,255,0.05);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    /* Footer Message */
+    .final-message {
+      text-align: center;
+      padding: 2rem;
+      margin-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1s ease;
+    }
+
+    .final-message.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .final-message h2 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 2.5rem;
+      color: var(--glow-gold);
+      margin-bottom: 1rem;
+    }
+
+    .final-message p {
+      font-size: 1rem;
+      color: var(--text-dim);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .flower-spot .flower-head { opacity: 1; transform: scale(1) rotate(0deg); }
+      .flower-spot .stem { height: 120px; }
+      .flower-spot .month-label { opacity: 1; transform: translateY(0); }
+      .leaf { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="garden-bg"></div>
+  <canvas id="fireflies"></canvas>
+
+  <div class="container">
+    <header class="header">
+      <h1>حديقة ذكرياتنا</h1>
+      <p>رحلة ستة أشهر من الحب</p>
+      <div class="date">27 مارس</div>
+    </header>
+
+    <div class="garden" id="garden">
+      <!-- Flowers will be injected here by JS -->
+    </div>
+
+    <div class="final-message" id="final-message">
+      <h2>إلى منال</h2>
+      <p>كل زهرة في هذه الحديقة تمثل لحظة غالية من حياتنا. أنتِ النور الذي جعل حديقتي تزهر. أحبك.</p>
+    </div>
+  </div>
+
+  <!-- Modal Overlay -->
+  <div class="modal-overlay" id="modal">
+    <div class="memory-card">
+      <button class="close-btn" id="close-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="icon" id="modal-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="stroke: var(--glow-rose);">
+           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+      <h2 id="modal-title">الشهر الأول</h2>
+      <span class="time" id="modal-time">بداية الرحلة</span>
+      <p id="modal-desc">تفاصيل الذكرى...</p>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const flowersData = [
+      { month: 'الشهر الأول', title: 'البداية', desc: 'عندما التقينا لأول مرة، عرفت أن حياتي ستتغير إلى الأبد. كانت بداية قصة جميلة.', color: '#fbb6ce' },
+      { month: 'الشهر الثاني', title: 'القرب', desc: 'بدأنا نتعرف على بعضنا أكثر. كل يوم كان يكشف لي جانباً جميلاً جديداً فيكِ.', color: '#90cdf4' },
+      { month: 'الشهر الثالث', title: 'الراحة', desc: 'أصبحتِ ملجئي وموطني. معكِ أجد السلام الحقيقي.', color: '#f6ad55' },
+      { month: 'الشهر الرابع', title: 'النمو', desc: 'تعلمنا وتطورنا معاً. أصبح فهم بعضنا البعض أعمق وأجمل.', color: '#a3d9a5' },
+      { month: 'الشهر الخامس', title: 'العمق', desc: 'حبنا نما بشكل لا يوصف. أصبحتِ جزءاً لا يتجزأ من روحي.', color: '#d6bcfa' },
+      { month: 'الشهر السادس', title: 'اليوم', desc: 'ستة أشهر مليئة بالحب والسعادة. وأنا أتطلع لاستكمال الرحلة معكِ للأبد.', color: '#ed64a6' }
+    ];
+
+    const garden = document.getElementById('garden');
+    const modal = document.getElementById('modal');
+    const closeBtn = document.getElementById('close-btn');
+    const modalTitle = document.getElementById('modal-title');
+    const modalTime = document.getElementById('modal-time');
+    const modalDesc = document.getElementById('modal-desc');
+
+    // Create Flowers
+    flowersData.forEach((flower, index) => {
+      const spot = document.createElement('div');
+      spot.className = 'flower-spot';
+      spot.dataset.index = index;
+      
+      // Create flower SVG dynamically with unique color
+      const flowerSVG = `
+        <svg viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="grad${index}" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" style="stop-color:white;stop-opacity:0.9" />
+              <stop offset="100%" style="stop-color:${flower.color};stop-opacity:1" />
+            </radialGradient>
+          </defs>
+          <g transform="translate(50, 50)">
+            <circle cx="0" cy="-20" r="15" fill="url(#grad${index})" opacity="0.9" />
+            <circle cx="19" cy="-6" r="15" fill="url(#grad${index})" opacity="0.9" />
+            <circle cx="12" cy="16" r="15" fill="url(#grad${index})" opacity="0.9" />
+            <circle cx="-12" cy="16" r="15" fill="url(#grad${index})" opacity="0.9" />
+            <circle cx="-19" cy="-6" r="15" fill="url(#grad${index})" opacity="0.9" />
+            <circle cx="0" cy="0" r="10" fill="${flower.color}" stroke="white" stroke-width="2" opacity="1" />
+          </g>
+        </svg>
+      `;
+
+      spot.innerHTML = `
+        <div class="leaf left"></div>
+        <div class="leaf right"></div>
+        <div class="stem"></div>
+        <div class="flower-head">${flowerSVG}</div>
+        <div class="month-label">${flower.month}</div>
+      `;
+
+      spot.addEventListener('click', () => openModal(index));
+      garden.appendChild(spot);
+    });
+
+    // Intersection Observer for Blooming Animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = Array.from(garden.children).indexOf(entry.target) * 200;
+          setTimeout(() => {
+            entry.target.classList.add('bloomed');
+          }, delay);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.flower-spot').forEach(spot => observer.observe(spot));
+
+    // Show final message after all flowers bloom
+    setTimeout(() => {
+      document.getElementById('final-message').classList.add('visible');
+    }, 2000); // Wait for flowers to bloom
+
+    // Modal Logic
+    function openModal(index) {
+      const data = flowersData[index];
+      modalTitle.textContent = data.title;
+      modalTime.textContent = data.month;
+      modalDesc.textContent = data.desc;
+      modal.classList.add('active');
+    }
+
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+
+    // Fireflies Animation
+    const canvas = document.getElementById('fireflies');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    }
+
+    function initParticles() {
+      particles = [];
+      const count = Math.floor((canvas.width * canvas.height) / 15000);
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 2 + 1,
+          alpha: Math.random(),
+          dx: (Math.random() - 0.5) * 0.5,
+          dy: (Math.random() - 0.5) * 0.5,
+          pulse: Math.random() * 0.05
+        });
+      }
+    }
+
+    function animateFireflies() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        
+        // Wrap around
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        // Glow effect
+        p.alpha += p.pulse;
+        if (p.alpha <= 0.2 || p.alpha >= 0.8) p.pulse *= -1;
+
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
+        gradient.addColorStop(0, `rgba(79, 209, 197, ${p.alpha})`);
+        gradient.addColorStop(0.5, `rgba(246, 173, 85, ${p.alpha * 0.5})`);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(animateFireflies);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    animateFireflies();
+  </script>
+</body>
+</html>
