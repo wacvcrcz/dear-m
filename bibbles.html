@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thinking of You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-top: #a1c4fd;
+      --bg-bottom: #c2e9fb;
+      --bubble-color: rgba(255, 255, 255, 0.4);
+      --bubble-border: rgba(255, 255, 255, 0.6);
+      --text-main: #2c3e50;
+      --accent: #ff6b81;
+      --gold: #f8b500;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom));
+      color: var(--text-main);
+      user-select: none;
+      position: relative;
+    }
+
+    /* Sky Background Elements */
+    .clouds {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.4) 0%, transparent 20%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 25%),
+        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 15%);
+      z-index: 0;
+    }
+
+    /* UI Overlay */
+    .ui-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeDown 1s ease-out forwards;
+    }
+
+    .hint {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      opacity: 0;
+      animation: fadeDown 1s ease-out 0.5s forwards;
+    }
+
+    .counter {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    /* Bubble Container */
+    #bubble-area {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    /* Bubble Styling */
+    .bubble {
+      position: absolute;
+      bottom: -150px;
+      background: var(--bubble-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid var(--bubble-border);
+      backdrop-filter: blur(4px);
+      box-shadow: 
+        inset 0 0 20px rgba(255,255,255,0.5),
+        0 0 10px rgba(255,255,255,0.3);
+      transition: transform 0.1s ease;
+      animation: floatUp linear infinite, sway 4s ease-in-out infinite alternate;
+    }
+
+    .bubble:hover {
+      transform: scale(1.1);
+      box-shadow: 
+        inset 0 0 25px rgba(255,255,255,0.7),
+        0 0 15px rgba(255,255,255,0.5);
+    }
+
+    .bubble:active {
+      transform: scale(0.95);
+    }
+
+    .bubble-text {
+      padding: 1rem;
+      font-family: 'Aref Ruqaa', serif;
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      color: #2c3e50;
+      font-weight: 700;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    /* Special Bubble (Final one) */
+    .bubble.special {
+      background: linear-gradient(135deg, rgba(255, 107, 129, 0.6), rgba(248, 181, 0, 0.4));
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 30px rgba(255, 107, 129, 0.4);
+    }
+
+    .bubble.special .bubble-text {
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      font-size: 1.4rem;
+    }
+
+    /* Animations */
+    @keyframes floatUp {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-120vh); }
+    }
+
+    @keyframes sway {
+      0% { margin-left: 0; }
+      100% { margin-left: 30px; }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Pop Animation */
+    .pop-effect {
+      position: absolute;
+      pointer-events: none;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: popBurst 0.5s ease-out forwards;
+      z-index: 50;
+    }
+
+    @keyframes popBurst {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    /* Final Message Modal */
+    #final-message {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.8s ease;
+    }
+
+    #final-message.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #final-message h2 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      transform: scale(0.8);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #final-message.show h2 {
+      transform: scale(1);
+    }
+
+    #final-message p {
+      font-size: 1.2rem;
+      color: #555;
+      max-width: 400px;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    /* Floating particles in background */
+    .particle {
+      position: absolute;
+      background: rgba(255,255,255,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bubble {
+        animation: none;
+        bottom: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clouds"></div>
+
+  <div class="ui-layer">
+    <h1>أفكار تخصك</h1>
+    <p class="hint">اضغطي الفقاعات لتعرفي ما بداخلي</p>
+    <div class="counter">انقرتِ <span id="count">0</span> فقاعات</div>
+  </div>
+
+  <div id="bubble-area"></div>
+
+  <div id="final-message">
+    <h2>أحبكِ منال</h2>
+    <p>في يوم عادي مثل اليوم، تذكرت كم أنتِ مهمة بالنسبة لي. شكراً لأنك موجودة في حياتي.</p>
+    <div style="font-family: 'Aref Ruqaa'; color: #888; margin-top: 2rem;">أسامة</div>
+  </div>
+
+  <!-- Optional Sound -->
+  <audio id="popSound" src="https://www.myinstants.com/media/sounds/pop.mp3" preload="auto"></audio>
+
+  <script>
+    const bubbleArea = document.getElementById('bubble-area');
+    const countEl = document.getElementById('count');
+    const finalMessage = document.getElementById('final-message');
+    const popSound = document.getElementById('popSound');
+
+    const thoughts = [
+      "ابتسامتك",
+      "حنانك",
+      "ضحكتك",
+      "قلبك الطيب",
+      "صوتك",
+      "ذكائك",
+      "روحك الجميلة",
+      "اهتمامك",
+      "نظراتك",
+      "تفهمك"
+    ];
+
+    let popCount = 0;
+    let specialSpawned = false;
+
+    function createBubble() {
+      const bubble = document.createElement('div');
+      bubble.classList.add('bubble');
+      
+      const size = Math.random() * 80 + 80; // 80-160px
+      const duration = Math.random() * 5 + 8; // 8-13s
+      const startX = Math.random() * (window.innerWidth - size);
+      const swayAmount = (Math.random() - 0.5) * 100;
+
+      bubble.style.width = `${size}px`;
+      bubble.style.height = `${size}px`;
+      bubble.style.left = `${startX}px`;
+      bubble.style.animationDuration = `${duration}s, 3s`;
+      bubble.style.animationDelay = `0s, ${Math.random()}s`;
+      // Custom sway per bubble
+      bubble.style.setProperty('--sway', `${swayAmount}px`);
+
+      const text = document.createElement('div');
+      text.classList.add('bubble-text');
+      text.innerText = thoughts[Math.floor(Math.random() * thoughts.length)];
+      
+      bubble.appendChild(text);
+      bubbleArea.appendChild(bubble);
+
+      // Interaction
+      bubble.addEventListener('click', (e) => {
+        popBubble(bubble, e.clientX, e.clientY);
+      });
+
+      // Remove when off screen
+      setTimeout(() => {
+        if(bubble.parentNode) bubble.remove();
+      }, duration * 1000);
+    }
+
+    function popBubble(bubble, x, y) {
+      // Sound
+      // popSound.currentTime = 0;
+      // popSound.play().catch(()=>{}); // Ignore errors if no interaction yet
+
+      // Visual Effect
+      const pop = document.createElement('div');
+      pop.classList.add('pop-effect');
+      pop.style.left = `${x - 50}px`;
+      pop.style.top = `${y - 50}px`;
+      document.body.appendChild(pop);
+      setTimeout(() => pop.remove(), 500);
+
+      // Remove Bubble
+      bubble.remove();
+
+      // Update Counter
+      popCount++;
+      countEl.innerText = popCount;
+
+      // Spawn Special Bubble after 5 pops
+      if (popCount >= 5 && !specialSpawned) {
+        spawnSpecialBubble();
+      }
+    }
+
+    function spawnSpecialBubble() {
+      specialSpawned = true;
+      
+      const bubble = document.createElement('div');
+      bubble.classList.add('bubble', 'special');
+      
+      const size = 160;
+      bubble.style.width = `${size}px`;
+      bubble.style.height = `${size}px`;
+      bubble.style.left = `calc(50% - ${size/2}px)`;
+      bubble.style.animationDuration = '12s';
+      bubble.style.bottom = '-200px'; // Start from bottom
+
+      const text = document.createElement('div');
+      text.classList.add('bubble-text');
+      text.innerText = "أحبكِ";
+      
+      bubble.appendChild(text);
+      bubbleArea.appendChild(bubble);
+
+      bubble.addEventListener('click', (e) => {
+        bubble.remove();
+        finalMessage.classList.add('show');
+      });
+    }
+
+    // Start generating bubbles
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion) {
+      setInterval(createBubble, 1500); // New bubble every 1.5s
+      // Create initial batch
+      for(let i=0; i<3; i++) {
+        setTimeout(createBubble, i * 400);
+      }
+    } else {
+      // Static mode for accessibility
+      for(let i=0; i<5; i++) createBubble();
+    }
+  </script>
+</body>
+</html>
