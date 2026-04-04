@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>من هو الأفضل؟</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f0f2f5;
+      --card-bg: #ffffff;
+      --text-dark: #1a1a1a;
+      --text-light: #666;
+      --oussama-color: #4a90e2; /* Blue for Oussama */
+      --maneel-color: #ff6b81;  /* Pink for Maneel */
+      --accent-gold: #f8b500;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: background-color 0.5s ease;
+    }
+
+    .container {
+      background: var(--card-bg);
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: var(--text-dark);
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* The Slider Area */
+    .slider-container {
+      position: relative;
+      margin: 3rem 0;
+      z-index: 2;
+    }
+
+    .labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .label-oussama { color: var(--oussama-color); }
+    .label-maneel { color: var(--maneel-color); }
+
+    /* Custom Slider */
+    .slider-track {
+      width: 100%;
+      height: 12px;
+      background: linear-gradient(to left, var(--maneel-color), #e0e0e0, var(--oussama-color));
+      border-radius: 6px;
+      position: relative;
+      outline: none;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 12px;
+      background: transparent; /* Track is handled by div above */
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 3;
+    }
+
+    /* Thumb (The handle) */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 30px;
+      height: 30px;
+      background: white;
+      border: 4px solid var(--accent-gold);
+      border-radius: 50%;
+      cursor: grab;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 30px;
+      height: 30px;
+      background: white;
+      border: 4px solid var(--accent-gold);
+      border-radius: 50%;
+      cursor: grab;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* The Verdict Box */
+    .verdict-box {
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 15px;
+      padding: 1.5rem;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      margin-top: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .verdict-text {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      line-height: 1.8;
+    }
+
+    .verdict-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    /* Confetti Animation */
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--maneel-color);
+      top: 0;
+      left: 50%;
+      z-index: 1;
+      opacity: 0;
+    }
+
+    /* Footer joke */
+    .footer-joke {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #999;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 2rem 1.5rem; }
+      h1 { font-size: 2rem; }
+      .verdict-text { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="card">
+    <h1>من هو الأفضل؟</h1>
+    
+    <div class="slider-container">
+      <div class="labels">
+        <span class="label-oussama">أسامة</span>
+        <span class="label-maneel">منال</span>
+      </div>
+      <div class="slider-track"></div>
+      <input type="range" min="0" max="100" value="50" id="decisionSlider">
+    </div>
+
+    <div class="verdict-box" id="verdictBox">
+      <div class="verdict-icon" id="verdictIcon">🤔</div>
+      <div class="verdict-text" id="verdictText">حركي الشريط لتعرفي الحقيقة...</div>
+    </div>
+
+    <div class="footer-joke">* النتائج نهائية وغير قابلة للتعديل 😂</div>
+  </div>
+
+  <script>
+    const slider = document.getElementById('decisionSlider');
+    const verdictText = document.getElementById('verdictText');
+    const verdictIcon = document.getElementById('verdictIcon');
+    const verdictBox = document.getElementById('verdictBox');
+    const body = document.body;
+    const card = document.getElementById('card');
+
+    // The Logic: No matter what, Maneel wins
+    const verdicts = {
+      oussamaSide: [
+        "أسامة هو... محظوظ جداً بوجود منال في حياته!",
+        "خطأ! الصحيح هو: منال هي الأفضل.",
+        "أسامة مجرد خادم لملكة هذا القلب (منال).",
+        "النظام يرفض هذا الاختيار. منال هي الفائزة."
+      ],
+      middle: [
+        "لا يوجد مقارنة... منال تفوز بجدارة.",
+        "القلب يقول: منال هي رقم واحد.",
+        "النتيجة واضحة، منال هي الأحلى."
+      ],
+      maneelSide: [
+        "إجابة صحيحة! منال هي الأفضل بلا منازع.",
+        "100% صحيح. منال هي نور الحياة.",
+        "عبقرية! لقد اكتشفتِ الحقيقة.",
+        "منال هي الأجمل، الأطيب، والأحب."
+      ]
+    };
+
+    function getVerdict(val) {
+      if (val <= 35) {
+        // Oussama Side (The Trick)
+        const randomIndex = Math.floor(Math.random() * verdicts.oussamaSide.length);
+        return { text: verdicts.oussamaSide[randomIndex], type: 'trick' };
+      } else if (val > 35 && val <= 65) {
+        // Middle
+        const randomIndex = Math.floor(Math.random() * verdicts.middle.length);
+        return { text: verdicts.middle[randomIndex], type: 'neutral' };
+      } else {
+        // Maneel Side
+        const randomIndex = Math.floor(Math.random() * verdicts.maneelSide.length);
+        return { text: verdicts.maneelSide[randomIndex], type: 'winner' };
+      }
+    }
+
+    slider.addEventListener('input', (e) => {
+      let val = e.target.value;
+      const result = getVerdict(val);
+
+      // Update Text
+      verdictText.innerText = result.text;
+
+      // Update Visuals based on result type
+      if (result.type === 'winner') {
+        verdictIcon.textContent = '👑';
+        verdictBox.style.borderColor = "#ff6b81";
+        verdictBox.style.background = "rgba(255, 107, 129, 0.05)";
+        body.style.backgroundColor = "#fff0f3";
+        verdictIcon.style.transform = "scale(1.2) rotate(-10deg)";
+      } else if (result.type === 'trick') {
+        verdictIcon.textContent = '👀';
+        verdictBox.style.borderColor = "#4a90e2";
+        verdictBox.style.background = "rgba(74, 144, 226, 0.05)";
+        body.style.backgroundColor = "#f0f4f8";
+        verdictIcon.style.transform = "scale(1)";
+        
+        // Annoying/funny logic: If she leaves it on Oussama's side too long, shake it
+        verdictBox.style.animation = "none";
+        void verdictBox.offsetWidth; // trigger reflow
+        verdictBox.style.animation = "shake 0.5s ease";
+      } else {
+        verdictIcon.textContent = '❤️';
+        verdictBox.style.borderColor = "#eee";
+        verdictBox.style.background = "#f9f9f9";
+        body.style.backgroundColor = "#f0f2f5";
+        verdictIcon.style.transform = "scale(1)";
+      }
+    });
+
+    // Add shake animation programmatically
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
