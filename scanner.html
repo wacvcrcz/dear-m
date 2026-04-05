@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mood Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #050505;
+      --bg-panel: #111;
+      --accent-cyan: #00f3ff;
+      --accent-pink: #ff0055;
+      --accent-green: #0aff0a;
+      --text-dim: #555;
+      --text-bright: #eee;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-bright);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Grid Background */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+      animation: flicker 3s infinite alternate;
+    }
+
+    /* Scanner Interface */
+    .scanner-frame {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 0 30px rgba(0, 243, 255, 0.1),
+        inset 0 0 20px rgba(0, 243, 255, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .scanner-frame.active {
+      border-color: var(--accent-pink);
+      box-shadow: 
+        0 0 50px rgba(255, 0, 85, 0.4),
+        inset 0 0 30px rgba(255, 0, 85, 0.2);
+    }
+
+    /* Fingerprint SVG */
+    .fingerprint {
+      width: 150px;
+      height: 150px;
+      opacity: 0.2;
+      transition: opacity 0.3s;
+    }
+
+    .scanner-frame.active .fingerprint {
+      opacity: 0.8;
+    }
+
+    .fingerprint path {
+      stroke: var(--text-dim);
+      transition: stroke 0.3s;
+    }
+
+    .scanner-frame.active .fingerprint path {
+      stroke: var(--accent-pink);
+    }
+
+    /* Scanning Line */
+    .scan-line {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 15px var(--accent-cyan);
+      top: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .scanner-frame.active .scan-line {
+      opacity: 1;
+      animation: scanMove 2s linear infinite;
+    }
+
+    @keyframes scanMove {
+      0% { top: 0; }
+      50% { top: 100%; }
+      100% { top: 0; }
+    }
+
+    /* Status Text */
+    .status-text {
+      margin-top: 2rem;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      min-height: 24px;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      height: 4px;
+      background: #222;
+      margin-top: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .progress-container.visible {
+      opacity: 1;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+      transition: width 0.1s linear;
+    }
+
+    /* Result Card */
+    .result-card {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s ease;
+      padding: 2rem;
+    }
+
+    .result-card.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .result-content {
+      text-align: center;
+      transform: scale(0.8);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .result-card.show .result-content {
+      transform: scale(1);
+    }
+
+    .result-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: var(--accent-cyan);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    .result-text {
+      font-size: 1.8rem;
+      line-height: 1.6;
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    .restart-btn {
+      background: transparent;
+      border: 1px solid var(--accent-pink);
+      color: var(--accent-pink);
+      padding: 10px 25px;
+      border-radius: 30px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .restart-btn:hover {
+      background: var(--accent-pink);
+      color: white;
+      box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+    }
+
+    /* Animations */
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+      20%, 24%, 55% { opacity: 0.8; }
+    }
+
+    /* Floating particles */
+    .particle {
+      position: absolute;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+
+  <div class="container">
+    <h1>Mood Scanner</h1>
+    
+    <div class="scanner-frame" id="scanner">
+      <div class="scan-line"></div>
+      <!-- Fingerprint Icon -->
+      <svg class="fingerprint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4" />
+        <path d="M5 19.5C5.5 18 6 15 6 12c0-.7.12-1.37.34-2" />
+        <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
+        <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
+        <path d="M8.65 22c.21-.66.45-1.32.57-2" />
+        <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
+        <path d="M2 16h.01" />
+        <path d="M21.8 16c.2-2 .131-5.354 0-6" />
+        <path d="M9 6.8a6 6 0 0 1 9 5.2c0 .47 0 1.17-.02 2" />
+      </svg>
+    </div>
+
+    <div class="status-text" id="statusText">اضغطي وانتظري</div>
+
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div class="result-card" id="resultCard">
+    <div class="result-content">
+      <div class="result-icon">✨</div>
+      <h2 class="result-title">نتيجة التحليل</h2>
+      <p class="result-text" id="resultText">...نتيجة...</p>
+      <button class="restart-btn" id="restartBtn">إعادة المحاولة</button>
+    </div>
+  </div>
+
+  <!-- Audio Context for Beeping -->
+  <script>
+    // Elements
+    const scanner = document.getElementById('scanner');
+    const statusText = document.getElementById('statusText');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const resultCard = document.getElementById('resultCard');
+    const resultText = document.getElementById('resultText');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // Data
+    const results = [
+      "تم اكتشاف: مستويات خطيرة من الجمال!",
+      "النتيجة: أنتِ 100% لطيفة وبس.",
+      "تحذير: هذا الشخص ملك لأسامة.",
+      "تحليل المزاج: سعيد جداً لأن أسامة يحبك.",
+      "خطأ في النظام: لا يمكن حساب مقدار حلاوتك!",
+      "النتيجة: ملكة هذا الكون."
+    ];
+
+    const scanningTexts = [
+      "جاري فحص البصمة...",
+      "تحليل نبضات القلب...",
+      "قياس مستوى الحلاوة...",
+      "مطابقة البيانات مع أسامة...",
+      "حساب النتيجة النهائية..."
+    ];
+
+    // Audio Context
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+
+    function playBeep() {
+      if (!audioCtx) audioCtx = new AudioContext();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.frequency.value = 880; // Frequency in Hz
+      oscillator.type = 'square';
+      gainNode.gain.value = 0.05; // Volume
+
+      oscillator.start();
+      setTimeout(() => oscillator.stop(), 100); // Short beep
+    }
+
+    // Logic
+    let isScanning = false;
+    let scanTimeout;
+    let progressInterval;
+    let textInterval;
+
+    function startScan() {
+      if (isScanning) return;
+      isScanning = true;
+
+      // Activate UI
+      scanner.classList.add('active');
+      progressContainer.classList.add('visible');
+      progressBar.style.width = '0%';
+
+      // Play sound
+      playBeep();
+
+      // Cycle Status Text
+      let textIndex = 0;
+      statusText.innerText = scanningTexts[textIndex];
+      textInterval = setInterval(() => {
+        textIndex++;
+        if (textIndex < scanningTexts.length) {
+          statusText.innerText = scanningTexts[textIndex];
+        }
+      }, 600);
+
+      // Progress Bar Animation
+      let width = 0;
+      progressInterval = setInterval(() => {
+        width += 1.5;
+        if (width <= 100) {
+          progressBar.style.width = width + '%';
+        }
+      }, 30);
+
+      // Finish after 2 seconds
+      scanTimeout = setTimeout(finishScan, 2500);
+    }
+
+    function finishScan() {
+      clearInterval(progressInterval);
+      clearInterval(textInterval);
+
+      // Show Result
+      const randomResult = results[Math.floor(Math.random() * results.length)];
+      resultText.innerText = randomResult;
+      resultCard.classList.add('show');
+      
+      // Reset Internal State
+      isScanning = false;
+      scanner.classList.remove('active');
+      statusText.innerText = "اكتمل التحليل";
+    }
+
+    function resetScanner() {
+      resultCard.classList.remove('show');
+      progressContainer.classList.remove('visible');
+      progressBar.style.width = '0%';
+      statusText.innerText = "اضغطي وانتظري";
+      scanner.classList.remove('active');
+      isScanning = false;
+    }
+
+    // Events
+    scanner.addEventListener('mousedown', startScan);
+    scanner.addEventListener('touchstart', (e) => {
+      e.preventDefault(); // Prevent scrolling
+      startScan();
+    });
+
+    // Cancel if they leave early (optional, makes it feel real)
+    scanner.addEventListener('mouseup', () => { if(isScanning) return; }); // keep going if started
+    scanner.addEventListener('mouseleave', () => { if(isScanning) return; });
+
+    restartBtn.addEventListener('click', resetScanner);
+  </script>
+</body>
+</html>
